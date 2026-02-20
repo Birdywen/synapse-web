@@ -5,707 +5,563 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Synapse — AI Browser Agent Framework</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --primary: #00e5ff;
-  --primary-dim: rgba(0, 229, 255, 0.15);
-  --secondary: #7c4dff;
-  --accent: #ff4081;
-  --bg-dark: #0a0a1a;
-  --bg-card: rgba(15, 15, 35, 0.8);
-  --text: #e0e0e0;
-  --text-dim: #888;
-  --glow: 0 0 30px rgba(0, 229, 255, 0.3);
+  --green: #00FF41;
+  --green-dim: rgba(0, 255, 65, 0.15);
+  --green-glow: 0 0 20px rgba(0, 255, 65, 0.3);
+  --bg: #000000;
+  --bg-card: rgba(0, 255, 65, 0.03);
+  --border: rgba(0, 255, 65, 0.2);
+  --text: #00FF41;
+  --text-white: #e0e0e0;
+  --text-dim: rgba(0, 255, 65, 0.65);
+  --text-bright: #00FF41;
 }
 
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Inter', -apple-system, sans-serif;
-  background: var(--bg-dark);
+  font-family: 'JetBrains Mono', 'Courier New', Courier, monospace;
+  background: var(--bg);
   color: var(--text);
   overflow-x: hidden;
   line-height: 1.6;
 }
 
-/* Neural network canvas background */
-#neural-bg {
+/* CRT Scanline overlay - subtle */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0,0,0,0.02) 0px,
+    rgba(0,0,0,0.02) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Matrix Rain Canvas */
+#matrix-bg {
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
   z-index: 0;
-  opacity: 0.6;
+  opacity: 0.08;
 }
 
 /* Navigation */
 nav {
   position: fixed;
   top: 0; left: 0; right: 0;
-  z-index: 100;
-  padding: 20px 40px;
+  z-index: 1000;
+  padding: 16px 40px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  backdrop-filter: blur(20px);
-  background: rgba(10, 10, 26, 0.7);
-  border-bottom: 1px solid rgba(0, 229, 255, 0.1);
-  transition: all 0.3s;
+  background: rgba(0, 0, 0, 0.9);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(10px);
 }
 
 .logo {
-  font-size: 24px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--green);
   display: flex;
   align-items: center;
   gap: 10px;
+  letter-spacing: 2px;
 }
 
-.logo-icon {
-  width: 32px; height: 32px;
-  position: relative;
-}
-
-.logo-icon::before {
-  content: '';
-  position: absolute;
-  width: 12px; height: 12px;
-  background: var(--primary);
-  border-radius: 50%;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 15px var(--primary);
-}
-
-.logo-icon::after {
-  content: '';
-  position: absolute;
-  width: 28px; height: 28px;
-  border: 2px solid var(--secondary);
-  border-radius: 50%;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  animation: pulse-ring 2s ease-out infinite;
-}
-
-@keyframes pulse-ring {
-  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; }
-}
+.logo-prefix {-dim); }
 
 .nav-links {
   display: flex;
-  gap: 30px;
   list-style: none;
+  gap: 32px;
 }
 
 .nav-links a {
   color: var(--text-dim);
   text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13px;
   letter-spacing: 1px;
   text-transform: uppercase;
   transition: color 0.3s;
 }
 
-.nav-links a:hover { color: var(--primary); }
+.nav-links a:hover { color: var(--green); }
 
-.nav-cta {
-  padding: 8px 24px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  border: none;
-  border-radius: 6px;
-  color: #000;
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  text-decoration: none;
-  transition: transform 0.2s, box-shadow 0.2s;
+/* Sections */
+section {
+  position: relative;
+  z-index: 10;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 100px 40px;
 }
 
-.nav-cta:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--glow);
+.section-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 4--text-dim);
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--green);
+  font-family: 'JetBrains Mono', 'Courier New', Courier, monospace;
+}
+
+.section-desc {
+  color: var(--text-dim);
+  font-size: 15px;
+  max-width: 600px;
+  margin-bottom: 60px;
+  line-height: 1.8;
 }
 
 /* Hero Section */
 .hero {
-  position: relative;
-  z-index: 1;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  padding: 120px 40px 80px;
+  position: relative;
+  z-index: 10;
 }
 
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 16px;
-  background: var(--primary-dim);
-  border: 1px solid rgba(0, 229, 255, 0.3);
-  border-radius: 20px;
-  font-size: 13px;
-  color: var(--primary);
-  font-weight: 500;
-  margin-bottom: 30px;
-  animation: fadeInUp 0.8s ease;
+.hero-prompt {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin-bottom: 24px;
+  letter-spacing: 2px;
 }
-
-.hero-badge .dot {
-  width: 6px; height: 6px;
-  background: var(--primary);
-  border-radius: 50%;
-  animation: blink 1.5s infinite;
-}
-
-@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
 .hero h1 {
-  font-size: clamp(48px, 8vw, 96px);
-  font-weight: 900;
-  line-height: 1.05;
-  margin-bottom: 24px;
-  text-shadow: 0 4px 30px rgba(0,0,0,0.8);
-  animation: fadeInUp 0.8s ease 0.1s both;
+  font-size: 80px;
+  font-weight: 700;
+  color: var(--green);
+  letter-spacing: 8px;
+  text-shadow: 0 0 10px rgba(0,255,65,0.8), 0 0 40px rgba(0,255,65,0.4), 0 0 80px rgba(0,255,65,0.2);
+  margin-bottom: 8px;
+  font-family: 'JetBrains Mono', 'Courier New', Courier, monospace;
 }
 
-.hero h1 .gradient {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-size: 200% auto;
-  animation: gradient-shift 4s ease infinite;
-}
-
-@keyframes gradient-shift {
-  0% { background-position: 0% center; }
-  50% { background-position: 100% center; }
-  100% { background-position: 0% center; }
+.hero .cursor {
+  display: inline-block;
+  width: 4px;
+  height: 70px;
+  background: var(--green);
+  margin-left: 8px;
+  animation: blink 1s step-end infinite;
+  vertical-align: bottom;
+}0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
 .hero-sub {
-  font-size: clamp(18px, 2.5vw, 24px);
-  color: rgba(255,255,255,0.75);
-  max-width: 700px;
-  margin-bottom: 50px;
-  font-weight: 400;
-  animation: fadeInUp 0.8s ease 0.2s both;
-}
-
-.hero-actions {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  justify-content: center;
-  animation: fadeInUp 0.8s ease 0.3s both;
-}
-
-.btn-primary {
-  padding: 16px 40px;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  border: none;
-  border-radius: 8px;
-  color: #000;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 0.3s;
-  letter-spacing: 0.5px;
-}
-
-.btn-primary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 40px rgba(0, 229, 255, 0.4);
-}
-
-.btn-secondary {
-  padding: 16px 40px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  text-decoration: none;
-  transition: all 0.3s;
-  backdrop-filter: blur(10px);
-}
-
-.btn-secondary:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-  background: var(--primary-dim);
-}
-
-.hero-stats {
-  display: flex;
-  gap: 60px;
-  margin-top: 80px;
-  animation: fadeInUp 0.8s ease 0.5s both;
-}
-
-.stat {
-  text-align: center;
-}
-
-.stat {
-  background: rgba(15,15,35,0.6);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 12px;
-  padding: 20px 28px;
-  backdrop-filter: blur(10px);
-}
-
-.stat-value {
-  font-size: 36px;
-  font-weight: 800;
-  color: var(--primary);
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.stat-label {
-  font-size: 13px;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-top: 4px;
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Section common */
-section {
-  position: relative;
-  z-index: 1;
-  padding: 120px 40px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.section-label {
-  font-size: 16px;
-  color: var(--primary);
-  text-transform: uppercase;
-  letter-spacing: 4px;
-  font-weight: 700;
-  margin-bottom: 20px;
-}
-
-.section-title {
-  font-size: clamp(40px, 6vw, 64px);
-  font-weight: 900;
-  margin-bottom: 28px;
-  line-height: 1.15;
-}
-
-.section-desc {
-  font-size: 22px;
-  color: var(--text-dim);
-  max-width: 700px;
-  margin-bottom: 70px;
-  font-weight: 300;
-  line-height: 1.7;
-}
-
-/* Architecture Section */
-.arch-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-}
-
-.arch-card {
-  background: var(--bg-card);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
-  padding: 40px 32px;
-  transition: all 0.4s;
-  position: relative;
-  overflow: hidden;
-}
-
-.arch-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, varopacity: 0;
-  transition: opacity 0.4s;
-}
-
-.arch-card:hover {
-  border-color: rgba(0, 229, 255, 0.2);
-  transform: translateY(-5px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-.arch-card:hover::before { opacity: 1; }
-
-.arch-icon {
-  width: 48px; height: 48px;
-  background: var(--primary-dim);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  margin-bottom: 20px;
-}
-
-.arch-card h3 {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 16px;
-}
-
-.arch-card p {
-  color: var(--text-dim);
-  font-size: 17px;
-  line-height: 1.8;
-}
-
-/* Code Demo Section */
-.code-section {
-  background: rgba(15, 15, 35, 0.5);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  padding: 60px;
-  margin-top: 60px;
-}
-
-.code-block {
-  background: #0d0d20;
-  border-radius: 12px;
-  padding: 32px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
-  line-height: 1.8;
-  overflow-x: auto;
-  position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.code-block .comment { color: #546e7a; }
-.code-block .keyword { color: #7c4dff; }
-.code-block .string { color: #00e676; }
-.code-block .symbol { color: #00e5ff; font-weight: 700; }
-.code-block .param { color: #ff9100; }
-.code-block .tag { color: #ff4081; }
-
-.code-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.code-dot {
-  width: 12px; height: 12px;
-  border-radius: 50%;
-}
-
-.code-dot.red { background: #ff5f56; }
-.code-dot.yellow { background: #ffbd2e; }
-.code-dot.green { background: #27c93f; }
-
-.code-title {
-  color: var(--text-dim);
-  font-size: 13px;
-  margin-left: 8px;
-}
-
-.code-tabs {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 24px;
-}
-
-.code-tab {
-  padding: 8px 20px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
-  color: var(--text-dim);
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.code-tab.active, .code-tab:hover {
-  background: var(--primary-dim);
-  border-color: rgba(0, 229, 255, 0.3);
-  color: var(--primary);
-}
-
-/* Features Grid */
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-}
-
-.feature-card {
-  background: var(--bg-card);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
-  padding: 36px;
-  transition: all 0.4s;
-}
-
-.feature-card:hover {
-  border-color: rgba(0, 229, 255, 0.15);
-  transform: translateY(-3px);
-}
-
-.feature-header {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 16px;
-}
-
-.feature-icon {
-  font-size: 36px;
-}
-
-.feature-card h3 {
-  font-size: 22px;
-  font-weight: 700;
-}
-
-.feature-card p {
-  color: var(--text-dim);
-  font-size: 17px;
-  line-height: 1.8;
-}
-
-.feature-tag {
-  display: inline-block;
-  padding: 4px 10px;
-  background: var(--primary-dim);
-  border-radius: 4px;
-  font-size: 11px;
-  color: var(--primary);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-top: 12px;
-}
-
-/* Comparison Section */
-.comparison {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
-  margin-top: 40px;
-}
-
-.compare-card {
-  background: var(--bg-card);
-  border-radius: 16px;
-  padding: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.compare-card.highlight {
-  border-color: rgba(0, 229, 255, 0.3);
-  box-shadow: 0 0 40px rgba(0, 229, 255, 0.1);
-}
-
-.compare-card h3 {
-  font-size: 22px;
-  margin-bottom: 8px;
-}
-
-.compare-card .subtitle {
-  color: var(--text-dim);
-  font-size: 14px;
-  margin-bottom: 24px;
-}
-
-.compare-list {
-  list-style: none;
-}
-
-.compare-list li {
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 15px;
-  color: var(--text-dim);
-}
-
-.compare-list li .check { color: var(--primary); }
-.compare-list li .cross { color: #ff4444; }
-
-/* Flow Section */
-.flow-container {
-  display: flex;
-  flex-direction: row !important;
-  flex-wrap: nowrap;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 60px;
-  width: 100%;
-  max-width: 1000px;
-  margin-left: auto;
-  margin-right: auto;
-  flex-wrap: wrap;
-}
-
-.flow-node {
-  text-align: center;
-  padding: 16px 12px;
-  background: var(--bg-card);
-  border: 1px solid rgba(0, 229, 255, 0.1);
-  border-radius: 12px;
-  transition: all 0.3s ease;
-  flex: 1;
-  min-width: 0;
-}
-
-.flow-node:hover {
-  border-color: var(--primary);
-  box-shadow: var(--glow);
-}
-
-.flow-node .icon { font-size: 32px; margin-bottom: 8px; }
-.flow-node .label { font-size: 14px; font-weight: 600; }
-.flow-node .desc { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
-
-.flow-arrow {
-  color: var(--primary);
-  font-size: 20px;
-  opacity: 0.6;
-  flex-shrink: 0;
-}
-
-@keyframes arrow-pulse {
-  0%, 100% { opacity: 0.4; transform: translateX(0); }
-  50% { opacity: 1; transform: translateX(5px); }
-}
-
-/* CTA Section */
-.cta-section {
-  text-align: center;
-  padding: 120px 40px;
-  position: relative;
-}
-
-.cta-section h2 {
-  font-size: clamp(36px, 5vw, 56px);
-  font-weight: 900;
-  margin-bottom: 20px;
-}
-
-.cta-section p {
-  font-size: 24px;
+  font-size: 18px;
   color: var(--text-dim);
   margin-bottom: 48px;
   font-weight: 300;
 }
 
+.hero-actions {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 80px;
+}
+
+.btn-primary {
+  padding: 14px 36px;
+  background: var(--green);
+  color: #000;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: none;
+  transition: all 0.3s;
+  font-family: 'JetBrains Mono', 'Courier New', Courier, monospace;
+}
+
+.btn-primary:hover {
+  box-shadow: var(--green-glow);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  padding: 14px 36px;
+  background: transparent;
+  color: var(--green);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 1px solid var(--border);
+  transition: all 0.3s;
+  font-family: 'JetBrains Mono', 'Courier New', Courier, monospace;
+}
+
+.btn-secondary:hover {
+  background: var(--green-dim);
+  border-color: var(--green);
+}
+
+/* Stats Row */
+.hero-stats {
+  display: flex;
+  gap: 60px;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--green);
+  text-shadow: 0 0 20px rgba(0,255,);
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-top: 8px;
+}
+
+/* Terminal Window Card */
+.term-card {
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.term-card:hover {
+  border-color: var(--green);
+  box-shadow: var(--green-glow);
+}
+
+.term-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(0, 255, 65, 0.05);
+  border-bottom: 1px solid var(--border);
+}
+
+.term-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+}
+
+.term-dot.red { background: #ff5f56; }
+.term-dot.yellow { background: #ffbd2e; }
+.term-dot.green { background: #27c93f; }
+
+.term-title {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-left: 8px;
+  letter-spacing: 1px;
+}
+
+.term-body {
+  padding: 24px;
+}
+
+/* Architecture Grid */
+.arch-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 60px;
+}
+
+.arch-card .term-body h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--green);
+}
+
+.arch-card .term-body p {
+  color: var(--text-dim);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.arch-icon {
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+
+/* Data Flow */
+.flow-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 40px;
+  width: 100%;
+}
+
+.flow-node {
+  text-align: center;
+  padding: 16px 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  flex: 1;
+  min-width: 0;
+  transition: all 0.3s;
+}
+
+.flow-node:hover {
+  border-color: var(--green);
+  box-shadow: var(--green-glow);
+}
+
+.flow-node .icon { font-size: 24px; margin-bottom: 6px; }
+.flow-node .label { font-size: 12px; font-weight: 600; color: var(--green); }
+.flow-node .desc { font-size: 10px; color: var(--text-dim); margin-top: 4px; }
+
+.flow-arrow {
+  color: var(--green);
+  font-size: 20px;
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+/* Code Section */
+.code-section {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.code-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0, 255, 65, 0.03);
+}
+
+.code-tab {
+  padding: 12px 24px;
+  font-size: 13px;
+  color: var(--text-dim);
+  cursor: pointer;
+  border-right: 1px solid var(--border);
+  transition: all 0.3s;
+  font-family: 'JetBrains Mono', 'Courier New', Courier, monospace;
+}
+
+.code-tab.active, .code-tab:hover {
+  color: var(--green);
+  background: rgba(0, 255, 65, 0.08);
+}
+
+.code-block {
+  padding: 24px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.code-block pre {
+  font-family: 'JetBrains Mono', 'Courier New', Courier, monospace;
+  white-space: pre;
+}
+
+.code-block .comment { color: rgba(0,255,65,0.3); }
+.code-block .keyword { color: #00FF41; font-weight: 700; }
+.code-block .string { color: #76ff7a; }
+.code-block .symbol { color: #fff; font-weight: 700; }
+.code-block .param { color: #90EE90; }
+.code-block .tag { color: #98FB98; }
+.code-block .prompt { color: rgba(0,255,65,0.4); }
+
+/* Features Grid */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.feature-card {
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  padding: 32px 24px;
+  transition: all 0.3s;
+}
+
+.feature-card:hover {
+  border-color: var(--green);
+  box-shadow: var(--green-glow);
+}
+
+.feature-icon {
+  font-size: 32px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.feature-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--green);
+}
+
+.feature-card p {
+  color: var(--text-dim);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* Comparison Table */
+.comp-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.comp-table thead tr {
+  background: rgba(0, 255, 65, 0.08);
+}
+
+.comp-table th {
+  padding: 18px 24px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--green);
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.comp-table th:not(:first-child) { text-align: center; }
+
+.comp-table td {
+  padding: 14px 24px;
+  border-bottom: 1px solid rgba(0,255,65,0.06);
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+.comp-table td:not(:first-child) { text-align: center; }
+
+.comp-table tbody tr:hover {
+  background: rgba(0, 255, 65, 0.03);
+}
+
+.check { color: var(--green); font-size: 18px; }
+.cross { color: #333; font-size: 18px; }
+
+/* CTA */
+.cta-section {
+  text-align: center;
+  padding: 120px 40px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.cta-section h2 {
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 16px;
+  font-family: 'JetBrains Mono', 'Courier New', Courier, monospace;
+}
+
+.cta-section p {
+  color: var(--text-dim);
+  font-size: 15px;
+  margin-bottom: 40px;
+}
+
 .cta-actions {
   display: flex;
-  gap: 16px;
+  gap: 20px;
   justify-content: center;
-  flex-wrap: wrap;
 }
 
 /* Footer */
 footer {
-  position: relative;
-  z-index: 1;
   text-align: center;
   padding: 40px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
   color: var(--text-dim);
-  font-size: 14px;
+  font-size: 12px;
+  letter-spacing: 1px;
 }
 
 footer a {
-  color: var(--primary);
+  color: var(--green);
   text-decoration: none;
 }
-
-/* Responsive */
-@media (max-width: 768px) {
-  nav { padding: 16px 20px; }
-  .nav-links { display: none; }
-  .arch-grid { grid-template-columns: 1fr; }
-  .features-grid { grid-template-columns: 1fr; }
-  .comparison { grid-template-columns: 1fr; }
-  .hero-stats { flex-direction: column; gap: 30px; }
-  .code-section { padding: 30px 20px; }
-  .flow-container { gap: 8px; }
-  .flow-arrow { font-size: 16px; }
-  section { padding: 80px 20px; }
-}
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--bg-dark); }
-::-webkit-scrollbar-thumb { background: rgba(0, 229, 255, 0.2); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(0, 229, 255, 0.4); }
 
 /* Scroll animations */
 .reveal {
   opacity: 0;
-  transform: translateY(40px);
-  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Fallback: make visible after page load if IntersectionObserver hasn't fired */
-.reveal-fallback {
-  opacity: 1 !important;
-  transform: translateY(0) !important;
-}
-
-/* Auto-reveal after load for headless/no-JS-observer scenarios */
-.auto-visible {
-  opacity: 1 !important;
-  transform: translateY(0) !important;
+  transform: translateY(20px);
+  transition: all 0.6s ease;
 }
 
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* Responsive */
+@media (max-width: 768px) {
+  nav { padding: 12px 20px; }
+  .nav-links { display: none; }
+  .hero h1 { font-size: 40px; letter-spacing: 4px; }
+  .hero .cursor { height: 35px; }
+  .arch-grid { grid-template-columns: 1fr; }
+  .features-grid { grid-template-columns: 1fr; }
+  .hero-stats { flex-direction: column; gap: 30px; }
+  .flow-container { gap: 6px; }
+  .flow-node { padding: 10px 6px; }
+  section { padding: 60px 20px; }
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb { background: rgba(0,255,65,0.2); }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,255,65,0.4); }
 </style>
 </head>
 <body>
 
-<canvas id="neural-bg"></canvas>
+<canvas id="matrix-bg"></canvas>
 
 <nav>
   <div class="logo">
-    <img src="https://ezmusicstore.com/thumbnails/synapse-logo.jpg" alt="Synapse" style="width:36px;height:36px;border-radius:8px;">
-    SYNAPSE
+    <span class="logo-prefix">$</span> SYNAPSE
   </div>
   <ul class="nav-links">
     <li><a href="#architecture">Architecture</a></li>
@@ -713,118 +569,124 @@ footer a {
     <li><a href="#formats">Formats</a></li>
     <li><a href="#comparison">Compare</a></li>
   </ul>
-  <a href="https://github.com/Birdywen/genspark-agent" class="nav-cta">GitHub</a>
 </nav>
 
 <!-- Hero -->
 <section class="hero">
-  <div class="hero-badge">
-    <span class="dot"></span>
-    Open Source AI Agent Framework
-  </div>
-  <h1>
-    Give AI<br>
-    <span class="gradient">Real Hands</span>
-  </h1>
-  <p class="hero-sub">
-    Synapse bridges AI models and browsers with zero-escape tool execution.
-    Run commands, write files, manipulate pages — all through natural conversation.
-  </p>
+  <div class="hero-prompt">// AI Browser Agent Framework</div>
+  <h1>SYNAPSE<span class="cursor"></span></h1>
+  <p class="hero-sub">Give AI Real Hands</p>
   <div class="hero-actions">
-    <a href="https://github.com/Birdywen/genspark-agent" class="btn-primary">Get Started</a>
-    <a href="#architecture" class="btn-secondary">How It Works</a>
+    <a href="https://github.com/Birdywen/genspark-agent" class="btn-primary">&gt; git clone</a>
+    <a href="#architecture" class="btn-secondary">&gt; cat README</a>
   </div>
   <div class="hero-stats">
     <div class="stat">
       <div class="stat-value" data-target="3">3</div>
-      <div class="stat-label">Transmission Formats</div>
+      <div class="stat-label">Formats</div>
     </div>
     <div class="stat">
-      <div class="stat-value" style="font-size:48px;">ZERO</div>
-      <div class="stat-label">Escaping Required</div>
+      <div class="stat-value" style="font-size:42px;">ZERO</div>
+      <div class="stat-label">Escaping</div>
     </div>
     <div class="stat">
       <div class="stat-value" data-target="200">&lt;200</div>
       <div class="stat-label">ms Latency</div>
     </div>
     <div class="stat">
-      <div class="stat-value" data-target="100">100</div>
-      <div class="stat-label">% Reliability</div>
+      <div class="stat-value" data-target="100">100%</div>
+      <div class="stat-label">Reliability</div>
     </div>
-  </div>
-
-  <div style="margin-top:80px; max-width:900px; width:100%; border-radius:16px; overflow:hidden; border:1px solid rgba(0,229,255,0.15); box-shadow:0 20px 80px rgba(0,229,255,0.15); animation:fadeInUp 0.8s ease 0.6s both;">
-    <img src="https://ezmusicstore.com/thumbnails/synapse-hero-bg.jpg" alt="Synapse Neural Network" style="width:100%; display:block; opacity:0.9;">
   </div>
 </section>
 
-
 <!-- Architecture -->
 <section id="architecture">
-  <div class="section-label reveal">Architecture</div>
-  <h2 class="section-title reveal">Three-Layer Intelligence</h2>
-  <p class="section-desc reveal">
-    Synapse intercepts AI output before DOM rendering, parses tool calls with zero escaping, and executes them reliably.
-  </p>
+  <div class="section-label reveal">// Architecture</div>
+  <h2 class="section-title reveal">System Design</h2>
+  <p class="section-desc reveal">Three core modules. Zero single points of failure.</p>
+
   <div class="arch-grid">
-    <div class="arch-card reveal">
-      <div class="arch-icon"><img src="https://ezmusicstore.com/thumbnails/synapse-icon-hook.jpg" alt="" style="width:60px;height:60px;border-radius:50%;object-fit:cover;box-shadow:0 0 20px rgba(0,229,255,0.3);border:2px solid rgba(0,229,255,0.15);"></div>
-      <h3>SSE / WebSocket Hook</h3>
-      <p>Intercepts raw AI stream before browser rendering. Captures pure text with no markdown corruption, no code highlighting interference.</p>
+    <div class="arch-card term-card reveal">
+      <div class="term-header">
+        <div class="term-dot red"></div>
+        <div class="term-dot yellow"></div>
+        <div class="term-dot green"></div>
+        <span class="term-title">sse-hook.js</span>
+      </div>
+      <div class="term-body">
+        <div class="arch-icon">📡</div>
+        <h3>SSE Hook</h3>
+        <p>Intercepts fetch response streams in real-time. Captures raw AI output before it reaches the page, enabling zero-latency command detection.</p>
+      </div>
     </div>
-    <div class="arch-card reveal">
-      <div class="arch-icon"><img src="https://ezmusicstore.com/thumbnails/synapse-icon-parser.jpg" alt="" style="width:60px;height:60px;border-radius:50%;object-fit:cover;box-shadow:0 0 20px rgba(0,229,255,0.3);border:2px solid rgba(0,229,255,0.15);"></div>
-      <h3>Omega Protocol Parser</h3>
-      <p>Parses ΩHERE, ΩBATCH, ΩHEREBATCH formats using delimiter-based boundaries. Zero JSON escaping, immune to special characters.</p>
+    <div class="arch-card term-card reveal">
+      <div class="term-header">
+        <div class="term-dot red"></div>
+        <div class="term-dot yellow"></div>
+        <div class="term-dot green"></div>
+        <span class="term-title">parser.js</span>
+      </div>
+      <div class="term-body">
+        <div class="arch-icon">🧬</div>
+        <h3>Ω Parser</h3>
+        <p>Parses ΩHERE, ΩBATCH, ΩHEREBATCH formats using delimiter-based boundaries. Zero JSON escaping required.</p>
+      </div>
     </div>
-    <div class="arch-card reveal">
-      <div class="arch-icon"><img src="https://ezmusicstore.com/thumbnails/synapse-icon-dedup.jpg" alt="" style="width:60px;height:60px;border-radius:50%;object-fit:cover;box-shadow:0 0 20px rgba(0,229,255,0.3);border:2px solid rgba(0,229,255,0.15);"></div>
-      <h3>Dual-Channel Dedup</h3>
-      <p>SSE primary + DOM fallback with intelligent deduplication. Every command executes exactly once, even across channel failures.</p>
+    <div class="arch-card term-card reveal">
+      <div class="term-header">
+        <div class="term-dot red"></div>
+        <div class="term-dot yellow"></div>
+        <div class="term-dot green"></div>
+        <span class="term-title">dedup.js</span>
+      </div>
+      <div class="term-body">
+        <div class="arch-icon">🛡</div>
+        <h3>Dual-Channel Dedup</h3>
+        <p>SSE primary + DOM fallback with intelligent deduplication. Every command executes exactly once, even across channel failures.</p>
+      </div>
     </div>
   </div>
 
   <!-- Data Flow -->
-  <div class="flow-container reveal">
+  <div class="flow-container reveal" style="display:flex !important;">
     <div class="flow-node">
       <div class="icon">🤖</div>
       <div class="label">AI Model</div>
-      <div class="desc">Generates Ω commands</div>
+      <div class="desc">Ω commands</div>
     </div>
-    <div class="flow-arrow">→</div>
+    <div class="flow-arrow">&gt;</div>
     <div class="flow-node">
       <div class="icon">📡</div>
       <div class="label">SSE Hook</div>
-      <div class="desc">Raw stream intercept</div>
+      <div class="desc">Intercept</div>
     </div>
-    <div class="flow-arrow">→</div>
+    <div class="flow-arrow">&gt;</div>
     <div class="flow-node">
       <div class="icon">🧬</div>
       <div class="label">Parser</div>
-      <div class="desc">Omega protocol</div>
+      <div class="desc">Ω Protocol</div>
     </div>
-    <div class="flow-arrow">→</div>
+    <div class="flow-arrow">&gt;</div>
     <div class="flow-node">
-      <div class="icon">🖥️</div>
+      <div class="icon">🖥</div>
       <div class="label">Server</div>
-      <div class="desc">Execute & respond</div>
+      <div class="desc">Execute</div>
     </div>
-    <div class="flow-arrow">→</div>
+    <div class="flow-arrow">&gt;</div>
     <div class="flow-node">
       <div class="icon">💬</div>
       <div class="label">Chat UI</div>
-      <div class="desc">Inject results</div>
+      <div class="desc">Inject</div>
     </div>
   </div>
 </section>
 
 <!-- Code Demo -->
 <section id="formats">
-  <div class="section-label reveal">Formats</div>
-  <h2 class="section-title reveal">The Omega Protocol</h2>
-  <p class="section-desc reveal">
-    Three formats for every scenario. No escaping, no corruption, no limits.
-  </p>
+  <div class="section-label reveal">// Formats</div>
+  <h2 class="section-title reveal">The Ω Protocol</h2>
+  <p class="section-desc reveal">Three formats for every scenario. No escaping. No corruption.</p>
 
   <div class="code-section reveal">
     <div class="code-tabs">
@@ -834,14 +696,8 @@ footer a {
     </div>
 
     <div class="code-block" id="code-here">
-      <div class="code-header">
-        <div class="code-dot red"></div>
-        <div class="code-dot yellow"></div>
-        <div class="code-dot green"></div>
-        <span class="code-title">Zero-escape file writing</span>
-      </div>
-<pre>
-<span">ΩHERE</span> <span class="keyword">write_file</span>
+<pre><span class="prompt">$</span> <span class="comment"># Zero-escape file writing</span>
+<span class="symbol">ΩHERE</span> <span class="keyword">write_file</span>
 <span class="param">@path</span>=<span class="string">/app/server.js</span>
 <span class="param">@content</span>&lt;&lt;<span class="tag">EOF</span>
 <span class="keyword">const</span> app = express();
@@ -850,252 +706,172 @@ app.get(<span class="string">'/'</span>, (req, res) =&gt; {
 });
 app.listen(<span class="string">3000</span>);
 <span class="tag">EOF</span>
-<span class="symbol">ΩEND</span>
-</pre>
+<span class="symbol">ΩEND</span></pre>
     </div>
 
     <div class="code-block" id="code-batch" style="display:none">
-      <div class="code-header">
-        <div class="code-dot red"></div>
-        <div class="code-dot yellow"></div>
-        <div class="code-dot green"></div>
-        <span class="code-title">Parallel execution</span>
-      </div>
-<pre>
-<span class="symbol">ΩBATCH</span>{"steps":[
-  {"tool":"run_command","params":{"command":"bash","stdin":"npm test"},"saveAs":"tests"},
-  {"tool":"read_file","params":{"path":"/app/config.json"},"saveAs":"config"}
-]}<span class="symbol">ΩEND</span>
-</pre>
+<pre><span class="prompt">$</span> <span class="comment"># Parallel execution</span>
+<span class="symbol">ΩBATCH</span><span class="keyword">{</span>"steps":[
+  {"tool":"<span class="string">read_file</span>","params":{"path":"<span class="string">config.json</span>"}},
+  {"tool":"<span class="string">run_command</span>","params":{"command":"<span class="string">npm test</span>"}},
+  {"tool":"<span class="string">bg_status</span>","params":{}}
+]<span class="keyword">}</span><span class="symbol">ΩEND</span></pre>
     </div>
 
     <div class="code-block" id="code-herebatch" style="display:none">
-      <div class="code-header">
-        <div class="code-dot red"></div>
-        <div class="code-dot yellow"></div>
-        <div class="code-dot green"></div>
-        <span class="code-title">Multi-tool batch with zero escaping</span>
-      </div>
-<pre>
+<pre><span class="prompt">$</span> <span class="comment"># Multi-tool HEREDOC batch</span>
 <span class="symbol">ΩHEREBATCH</span>
 <span class="symbol">ΩHERE</span> <span class="keyword">run_command</span>
-<span class="param">@saveAs</span>=<span class="string">build</span>
 <span class="param">@command</span>=<span class="string">bash</span>
 <span class="param">@stdin</span>&lt;&lt;<span class="tag">SCRIPT</span>
-npm run build &amp;&amp; echo "Build successful"
+echo "deploying..."
+npm run build
 <span class="tag">SCRIPT</span>
-
 <span class="symbol">ΩHERE</span> <span class="keyword">write_file</span>
-<span class="param">@path</span>=<span class="string">/app/deploy.sh</span>
-<span class="param">@content</span>&lt;&lt;<span class="tag">CODE</span>
-#!/bin/bash
-rsync -avz ./dist/ server:/var/www/
-<span class="tag">CODE</span>
-<span class="symbol">ΩHEREBATCHEND</span>
-</pre>
+<span class="param">@path</span>=<span class="string">/app/.env</span>
+<span class="param">@content</span>&lt;&lt;<span class="tag">ENV</span>
+NODE_ENV=production
+PORT=3000
+<span class="tag">ENV</span>
+<span class="symbol">ΩHEREBATCHEND</span></pre>
     </div>
   </div>
 </section>
 
 <!-- Features -->
 <section id="features">
-  <div class="section-label reveal">Features</div>
-  <h2 class="section-title reveal">Built for Real Work</h2>
-  <p class="section-desc reveal">
-    Not a toy. A production-grade framework for AI-driven automation.
-  </p>
+  <div class="section-label reveal">// Features</div>
+  <h2 class="section-title reveal">Capabilities</h2>
+  <p class="section-desc reveal">Everything you need to give AI real execution power.</p>
+
   <div class="features-grid">
     <div class="feature-card reveal">
-      <div class="feature-header">
-        <span class="feature-icon">📁</span>
-        <h3>File System Access</h3>
-      </div>
-      <p>Read, write, and edit files with surgical precision. ΩHERE format preserves every character.</p>
-      <span class="feature-tag">write_file · edit_file · read_file</span>
+      <span class="feature-icon">📁</span>
+      <h3>File Operations</h3>
+      <p>Read, write, and edit files with zero-escape content transmission. Template literals, regex, quotes — all preserved.</p>
     </div>
     <div class="feature-card reveal">
-      <div class="feature-header">
-        <span class="feature-icon">🖥</span>
-        <h3>Command Execution</h3>
-      </div>
-      <p>Run any shell command with full stdin support. Background process management for long-running tasks.</p>
-      <span class="feature-tag">run_command · bg_run · bg_status</span>
+      <span class="feature-icon">🖥</span>
+      <h3>Command Execution</h3>
+      <p>Run shell commands with full stdin support. Background processes, real-time output, process management.</p>
     </div>
     <div class="feature-card reveal">
-      <div class="feature-header">
-        <span class="feature-icon">🌐</span>
-        <h3>Browser Automation</h3>
-      </div>
-      <p>Execute JavaScript on any page, take screenshots, monitor network requests. Full browser control.</p>
-      <span class="feature-tag">eval_js · take_screenshot · list_network</span>
+      <span class="feature-icon">🌐</span>
+      <h3>Browser Automation</h3>
+      <p>Execute JavaScript in any tab via eval_js. DOM manipulation, API interception, cross-tab communication.</p>
     </div>
     <div class="feature-card reveal">
-      <div class="feature-header">
-        <span class="feature-icon">🔗</span>
-        <h3>MCP Integration</h3>
-      </div>
-      <p>Connect any MCP server as a tool provider. GitHub, databases, APIs — all through Omega protocol.</p>
-      <span class="feature-tag">mcp · github · supabase</span>
+      <span class="feature-icon">🔗</span>
+      <h3>MCP Integration</h3>
+      <p>Full Model Context Protocol support. Connect to any MCP server, extend capabilities with standard tools.</p>
     </div>
     <div class="feature-card reveal">
-      <div class="feature-header">
-        <span class="feature-icon">🛡</span>
-        <h3>Safety &amp; Dedup</h3>
-      </div>
-      <p>Three-layer deduplication prevents double execution. Server-side validation catches corruption.</p>
-      <span class="feature-tag">dedup · validation · safety</span>
+      <span class="feature-icon">🛡</span>
+      <h3>Dual-Channel Safety</h3>
+      <p>SSE + DOM dual execution channels with SHA-256 deduplication. Commands execute exactly once.</p>
     </div>
     <div class="feature-card reveal">
-      <div class="feature-header">
-        <span class="feature-icon">🔄</span>
-        <h3>Multi-Site Support</h3>
-      </div>
-      <p>Works on any AI chat interface. SSE or WebSocket — swap the hook layer, keep everything else.</p>
-      <span class="feature-tag">sse · websocket · universal</span>
+      <span class="feature-icon">🔄</span>
+      <h3>Protocol Agnostic</h3>
+      <p>Works over SSE, WebSocket, or polling. Swap the hook layer, keep everything else unchanged.</p>
     </div>
   </div>
 </section>
 
 <!-- Comparison -->
 <section id="comparison">
-  <div class="section-label reveal">Comparison</div>
-  <h2 class="section-title reveal">Beyond MCP</h2>
-  <p class="section-desc reveal">
-    Standard MCP is powerful. Synapse takes it further.
-  </p>
-  <div class="reveal" style="overflow:hidden;border-radius:16px;border:1px solid rgba(0,229,255,0.15);box-shadow:0 0 40px rgba(0,229,255,0.08);"><table style="width:100%;border-collapse:collapse;font-size:17px;"><thead><tr style="background:rgba(0,229,255,0.1);"><th style="padding:22px 32px;text-align:left;font-size:19px;font-weight:700;color:var(--text);border-bottom:2px solid rgba(0,229,255,0.2);width:45%;">Feature</th><th style="padding:22px 32px;text-align:center;font-size:19px;font-weight:700;color:var(--text-dim);border-bottom:2px solid rgba(0,229,255,0.2);width:27.5%;">Standard MCP</th><th style="padding:22px 32px;text-align:center;font-size:19px;font-weight:700;color:var(--primary);border-bottom:2px solid rgba(0,229,255,0.2);width:27.5%;">Synapse Ω</th></tr></thead><tbody><tr style="background:rgba(0,229,255,0.03);"><td style="padding:18px 32px;color:var(--text);font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);">Structured tool calls</td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td></tr>
-<tr style="background:transparent;"><td style="padding:18px 32px;color:var(--text);font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);">Ecosystem / MCP integration</td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td></tr>
-<tr style="background:rgba(0,229,255,0.03);"><td style="padding:18px 32px;color:var(--text);font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);">Zero-escape content transmission</td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#555;font-size:22px;">&#10007;</span></td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td></tr>
-<tr style="background:transparent;"><td style="padding:18px 32px;color:var(--text);font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);">Batch parallel execution</td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#555;font-size:22px;">&#10007;</span></td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td></tr>
-<tr style="background:rgba(0,229,255,0.03);"><td style="padding:18px 32px;color:var(--text);font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);">HEREDOC multi-tool batch</td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#555;font-size:22px;">&#10007;</span></td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td></tr>
-<tr style="background:transparent;"><td style="padding:18px 32px;color:var(--text);font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);">Custom end markers</td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#555;font-size:22px;">&#10007;</span></td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td></tr>
-<tr style="background:rgba(0,229,255,0.03);"><td style="padding:18px 32px;color:var(--text);font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);">Browser automation</td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#555;font-size:22px;">&#10007;</span></td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td></tr>
-<tr style="background:transparent;"><td style="padding:18px 32px;color:var(--text);font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);">Dual-channel reliability</td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#555;font-size:22px;">&#10007;</span></td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td></tr>
-<tr style="background:rgba(0,229,255,0.03);"><td style="padding:18px 32px;color:var(--text);font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);">Background process management</td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#555;font-size:22px;">&#10007;</span></td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td></tr>
-<tr style="background:transparent;"><td style="padding:18px 32px;color:var(--text);font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);">Cross-tab communication</td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#555;font-size:22px;">&#10007;</span></td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td></tr>
-</tbody></table></div>
+  <div class="section-label reveal">// Compare</div>
+  <h2 class="section-title reveal">Synapse vs Standard MCP</h2>
+  <p class="section-desc reveal">Standard MCP is powerful. Synapse takes it further.</p>
+
+  <div class="reveal">
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>MCP</th>
+          <th style="color:var(--green);">Synapse Ω</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Structured tool calls</td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+        <tr><td>MCP ecosystem</td><td><span class="check">✓</span></td><td><span class="check">✓</span></td></tr>
+        <tr><td>Zero-escape transmission</td><td><span class="cross">✗</span></td><td><span class="check">✓</span></td></tr>
+        <tr><td>Batch parallel execution</td><td><span class="cross">✗</span></td><td><span class="check">✓</span></td></tr>
+        <tr><td>HEREDOC multi-tool batch</td><td><span class="cross">✗</span></td><td><span class="check">✓</span></td></tr>
+        <tr><td>Custom end markers</td><td><span class="cross">✗</span></td><td><span class="check">✓</span></td></tr>
+        <tr><td>Browser automation</td><td><span class="cross">✗</span></td><td><span class="check">✓</span></td></tr>
+        <tr><td>Dual-channel reliability</td><td><span class="cross">✗</span></td><td><span class="check">✓</span></td></tr>
+        <tr><td>Background processes</td><td><span class="cross">✗</span></td><td><span class="check">✓</span></td></tr>
+        <tr><td>Cross-tab communication</td><td><span class="cross">✗</span></td><td><span class="check">✓</span></td></tr>
+      </tbody>
+    </table>
+  </div>
 </section>
 
 <!-- CTA -->
 <section class="cta-section">
-  <h2 class="reveal">Ready to <span class="gradient">Connect</span>?</h2>
+  <h2 class="reveal">&gt; Ready to Connect?</h2>
   <p class="reveal">Open source. Extensible. Built for builders.</p>
   <div class="cta-actions reveal">
-    <a href="https://github.com/Birdywen/genspark-agent" class="btn-primary">View on GitHub</a>
-    <a href="#formats" class="btn-secondary">Read the Docs</a>
+    <a href="https://github.com/Birdywen/genspark-agent" class="btn-primary">&gt; View Source</a>
+    <a href="#formats" class="btn-secondary">&gt; Read Docs</a>
   </div>
 </section>
 
 <footer>
-  <p>Built with <span style="color: var(--accent)">&hearts;</span> by <a href="https://github.com/Birdywen">Birdywen</a> · Powered by the Omega Protocol</p>
+  <p>$ echo "Built by <a href="https://github.com/Birdywen">Birdywen</a> // Powered by the Ω Protocol"</p>
 </footer>
 
 <script>
-const canvas = document.getElementById('neural-bg');
-const c = canvas.getContext('2d');
-let W, H, nodes = [], mouse = { x: -1000, y: -1000 };
+// Matrix Rain
+var canvas = document.getElementById('matrix-bg');
+var ctx = canvas.getContext('2d');
+var W, H;
 
-function resize() {
+function resizeCanvas() {
   W = canvas.width = window.innerWidth;
   H = canvas.height = window.innerHeight;
 }
-resize();
-window.addEventListener('resize', resize);
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
 
-class Node {
-  constructor() {
-    this.x = Math.random() * W;
-    this.y = Math.random() * H;
-    this.vx = (Math.random() - 0.5) * 0.5;
-    this.vy = (Math.random() - 0.5) * 0.5;
-    this.r = 1.5 + Math.random() * 2;
-    this.pulse = Math.random() * Math.PI * 2;
-    this.pulseSpeed = 0.02 + Math.random() * 0.02;
-  }
-  update() {
-    this.x += this.vx;
-    this.y += this.vy;
-    this.pulse += this.pulseSpeed;
-    if (this.x < 0 || this.x > W) this.vx *= -1;
-    if (this.y < 0 || this.y > H) this.vy *= -1;
-    const dx = mouse.x - this.x;
-    const dy = mouse.y - this.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist < 200) {
-      this.vx += dx * 0.00005;
-      this.vy += dy * 0.00005;
-    }
-  }
-  draw() {
-    const glow = 0.5 + Math.sin(this.pulse) * 0.3;
-    c.beginPath();
-    c.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-    c.fillStyle = 'rgba(0, 229, 255, ' + glow + ')';
-    c.fill();
+var fontSize = 14;
+var columns = Math.floor(W / fontSize);
+var drops = [];
+for (var i = 0; i < columns; i++) drops[i] = Math.random() * -100;
+
+var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()' + omega;
+
+function drawMatrix() {
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#00FF41';
+  ctx.font = fontSize + 'px JetBrains Mono';
+
+  for (var i = 0; i < drops.length; i++) {
+    var text = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillStyle = 'rgba(0, 255, 65, ' + (0.05 + Math.random() * 0.15) + ')';
+    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+    if (drops[i] * fontSize > H && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
   }
 }
+setInterval(drawMatrix, 50);
 
-for (let i = 0; i < 80; i++) nodes.push(new Node());
+// Scroll reveal
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.1 });
 
-function drawNetwork() {
-  c.clearRect(0, 0, W, H);
-  for (let i = 0; i < nodes.length; i++) {
-    for (let j = i + 1; j < nodes.length; j++) {
-      const dx = nodes[i].x - nodes[j].x;
-      const dy = nodes[i].y - nodes[j].y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 180) {
-        const alpha = (1 - dist / 180) * 0.15;
-        c.beginPath();
-        c.moveTo(nodes[i].x, nodes[i].y);
-        c.lineTo(nodes[j].x, nodes[j].y);
-        const signal = (Math.sin(Date.now() * 0.003 + i * 0.5) + 1) / 2;
-        if (signal > 0.7 && dist < 120) {
-          c.strokeStyle = 'rgba(124, 77, 255, ' + (alpha * 2) + ')';
-          c.lineWidth = 1.5;
-        } else {
-          c.strokeStyle = 'rgba(0, 229, 255, ' + alpha + ')';
-          c.lineWidth = 0.5;
-        }
-        c.stroke();
-      }
-    }
-  }
-  nodes.forEach(function(n) { n.update(); n.draw(); });
-  requestAnimationFrame(drawNetwork);
-}
-drawNetwork();
+document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el); });
 
-// Auto-reveal all elements after 1s (fallback for headless/no-scroll)
+// Auto-reveal fallback
 setTimeout(function() {
-  document.querySelectorAll('.reveal').forEach(function(el) {
-    el.classList.add('visible');
-  });
-}, 1000);
-
-// Counter animation
-function animateCounters() {
-  var counters = document.querySelectorAll('.stat-value');
-  counters.forEach(function(counter) {
-    var target = parseInt(counter.getAttribute('data-target') || '0');
-    if (target === 0) return;
-    var duration = 2000;
-    var start = performance.now();
-    function update(now) {
-      var elapsed = now - start;
-      var progress = Math.min(elapsed / duration, 1);
-      var eased = 1 - Math.pow(1 - progress, 3);
-      counter.textContent = Math.floor(target * eased);
-      if (progress < 1) requestAnimationFrame(update);
-      else counter.textContent = target;
-    }
-    requestAnimationFrame(update);
-  });
-}
-setTimeout(animateCounters, 1500);
-
-document.addEventListener('mousemove', function(e) { mouse.x = e.clientX; mouse.y = e.clientY; });
-document.addEventListener('mouseleave', function() { mouse.x = -1000; mouse.y = -1000; });
+  document.querySelectorAll('.reveal').forEach(function(el) { el.classList.add('visible'); });
+}, 2000);
 
 // Code tabs
 document.querySelectorAll('.code-tab').forEach(function(tab) {
@@ -1107,50 +883,27 @@ document.querySelectorAll('.code-tab').forEach(function(tab) {
   });
 });
 
-// Scroll reveal
-const observer = new IntersectionObserver(function(entries) {
-  entries.forEach(function(entry) {
-    if (entry.isIntersecting) entry.target.classList.add('visible');
-  });
-}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el); });
-
 // Counter animation
 function animateCounters() {
-  document.querySelectorAll('.stat-value').forEach(function(el) {
-    const target = parseInt(el.dataset.target);
-    const duration = 2000;
-    const start = performance.now();
-    function tick(now) {
-      const elapsed = now - start;
-      const progress = Math.min(elapsed / duration, 1);
-      const ease = 1 - Math.pow(1 - progress, 3);
-      const current = Math.floor(ease * target);
-      if (target === 0) el.textContent = '0';
-      else if (target === 100) el.textContent = current + '%';
-      else if (target === 200) el.textContent = '<' + current;
-      else el.textContent = current;
-      if (progress < 1) requestAnimationFrame(tick);
+  document.querySelectorAll('.stat-value[data-target]').forEach(function(el) {
+    var target = parseInt(el.getAttribute('data-target'));
+    if (!target) return;
+    var start = performance.now();
+    function update(now) {
+      var progress = Math.min((now - start) / 1500, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.floor(target * eased);
+      if (progress < 1) requestAnimationFrame(update);
+      else {
+        if (target === 200) el.textContent = '<200';
+        else if (target === 100) el.textContent = '100%';
+        else el.textContent = target;
+      }
     }
-    requestAnimationFrame(tick);
+    requestAnimationFrame(update);
   });
 }
-
-setTimeout(function() {
-  document.querySelectorAll('.reveal').forEach(function(el) { el.classList.add('visible'); });
-}, 1500);
 setTimeout(animateCounters, 500);
-
-window.addEventListener('scroll', function() {
-  const nav = document.querySelector('nav');
-  if (window.scrollY > 50) {
-    nav.style.background = 'rgba(10, 10, 26, 0.95)';
-    nav.style.borderBottom = '1px solid rgba(0, 229, 255, 0.15)';
-  } else {
-    nav.style.background = 'rgba(10, 10, 26, 0.7)';
-    nav.style.borderBottom = '1px solid rgba(0, 229, 255, 0.1)';
-  }
-});
 </script>
 </body>
 </html>
