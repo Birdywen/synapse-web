@@ -302,27 +302,28 @@ section {
 }
 
 .section-label {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--primary);
   text-transform: uppercase;
-  letter-spacing: 3px;
-  font-weight: 600;
-  margin-bottom: 16px;
+  letter-spacing: 4px;
+  font-weight: 700;
+  margin-bottom: 20px;
 }
 
 .section-title {
-  font-size: clamp(32px, 5vw, 48px);
-  font-weight: 800;
-  margin-bottom: 20px;
-  line-height: 1.2;
+  font-size: clamp(40px, 6vw, 64px);
+  font-weight: 900;
+  margin-bottom: 28px;
+  line-height: 1.15;
 }
 
 .section-desc {
-  font-size: 18px;
+  font-size: 22px;
   color: var(--text-dim);
-  max-width: 600px;
-  margin-bottom: 60px;
+  max-width: 700px;
+  margin-bottom: 70px;
   font-weight: 300;
+  line-height: 1.7;
 }
 
 /* Architecture Section */
@@ -371,15 +372,15 @@ section {
 }
 
 .arch-card h3 {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 700;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .arch-card p {
   color: var(--text-dim);
-  font-size: 15px;
-  line-height: 1.7;
+  font-size: 17px;
+  line-height: 1.8;
 }
 
 /* Code Demo Section */
@@ -486,18 +487,18 @@ section {
 }
 
 .feature-icon {
-  font-size: 28px;
+  font-size: 36px;
 }
 
 .feature-card h3 {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 700;
 }
 
 .feature-card p {
   color: var(--text-dim);
-  font-size: 15px;
-  line-height: 1.7;
+  font-size: 17px;
+  line-height: 1.8;
 }
 
 .feature-tag {
@@ -615,9 +616,9 @@ section {
 }
 
 .cta-section p {
-  font-size: 20px;
+  font-size: 24px;
   color: var(--text-dim);
-  margin-bottom: 40px;
+  margin-bottom: 48px;
   font-weight: 300;
 }
 
@@ -677,6 +678,12 @@ footer a {
   transform: translateY(0) !important;
 }
 
+/* Auto-reveal after load for headless/no-JS-observer scenarios */
+.auto-visible {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
@@ -721,19 +728,19 @@ footer a {
   </div>
   <div class="hero-stats">
     <div class="stat">
-      <div class="stat-value" data-target="3">0</div>
+      <div class="stat-value" data-target="3">3</div>
       <div class="stat-label">Transmission Formats</div>
     </div>
     <div class="stat">
-      <div class="stat-value" data-target="0">0</div>
+      <div class="stat-value" style="font-size:48px;">ZERO</div>
       <div class="stat-label">Escaping Required</div>
     </div>
     <div class="stat">
-      <div class="stat-value" data-target="200">0</div>
+      <div class="stat-value" data-target="200">&lt;200</div>
       <div class="stat-label">ms Latency</div>
     </div>
     <div class="stat">
-      <div class="stat-value" data-target="100">0</div>
+      <div class="stat-value" data-target="100">100</div>
       <div class="stat-label">% Reliability</div>
     </div>
   </div>
@@ -753,17 +760,17 @@ footer a {
   </p>
   <div class="arch-grid">
     <div class="arch-card reveal">
-      <div class="arch-icon"><img src="https://ezmusicstore.com/thumbnails/synapse-icon-hook.jpg" alt="" style="width:44px;height:44px;border-radius:50%;object-fit:cover;box-shadow:0 0 15px rgba(0,229,255,0.3);"></div>
+      <div class="arch-icon"><img src="https://ezmusicstore.com/thumbnails/synapse-icon-hook.jpg" alt="" style="width:60px;height:60px;border-radius:50%;object-fit:cover;box-shadow:0 0 20px rgba(0,229,255,0.3);border:2px solid rgba(0,229,255,0.15);"></div>
       <h3>SSE / WebSocket Hook</h3>
       <p>Intercepts raw AI stream before browser rendering. Captures pure text with no markdown corruption, no code highlighting interference.</p>
     </div>
     <div class="arch-card reveal">
-      <div class="arch-icon"><img src="https://ezmusicstore.com/thumbnails/synapse-icon-parser.jpg" alt="" style="width:44px;height:44px;border-radius:50%;object-fit:cover;box-shadow:0 0 15px rgba(0,229,255,0.3);"></div>
+      <div class="arch-icon"><img src="https://ezmusicstore.com/thumbnails/synapse-icon-parser.jpg" alt="" style="width:60px;height:60px;border-radius:50%;object-fit:cover;box-shadow:0 0 20px rgba(0,229,255,0.3);border:2px solid rgba(0,229,255,0.15);"></div>
       <h3>Omega Protocol Parser</h3>
       <p>Parses ΩHERE, ΩBATCH, ΩHEREBATCH formats using delimiter-based boundaries. Zero JSON escaping, immune to special characters.</p>
     </div>
     <div class="arch-card reveal">
-      <div class="arch-icon"><img src="https://ezmusicstore.com/thumbnails/synapse-icon-dedup.jpg" alt="" style="width:44px;height:44px;border-radius:50%;object-fit:cover;box-shadow:0 0 15px rgba(0,229,255,0.3);"></div>
+      <div class="arch-icon"><img src="https://ezmusicstore.com/thumbnails/synapse-icon-dedup.jpg" alt="" style="width:60px;height:60px;border-radius:50%;object-fit:cover;box-shadow:0 0 20px rgba(0,229,255,0.3);border:2px solid rgba(0,229,255,0.15);"></div>
       <h3>Dual-Channel Dedup</h3>
       <p>SSE primary + DOM fallback with intelligent deduplication. Every command executes exactly once, even across channel failures.</p>
     </div>
@@ -892,7 +899,7 @@ rsync -avz ./dist/ server:/var/www/
   <div class="features-grid">
     <div class="feature-card reveal">
       <div class="feature-header">
-        <span class="feature-icon">&#x1f4c1;</span>
+        <span class="feature-icon">📁</span>
         <h3>File System Access</h3>
       </div>
       <p>Read, write, and edit files with surgical precision. ΩHERE format preserves every character.</p>
@@ -900,7 +907,7 @@ rsync -avz ./dist/ server:/var/www/
     </div>
     <div class="feature-card reveal">
       <div class="feature-header">
-        <span class="feature-icon">&#x1f5a5;</span>
+        <span class="feature-icon">🖥</span>
         <h3>Command Execution</h3>
       </div>
       <p>Run any shell command with full stdin support. Background process management for long-running tasks.</p>
@@ -908,7 +915,7 @@ rsync -avz ./dist/ server:/var/www/
     </div>
     <div class="feature-card reveal">
       <div class="feature-header">
-        <span class="feature-icon">&#x1f310;</span>
+        <span class="feature-icon">🌐</span>
         <h3>Browser Automation</h3>
       </div>
       <p>Execute JavaScript on any page, take screenshots, monitor network requests. Full browser control.</p>
@@ -916,7 +923,7 @@ rsync -avz ./dist/ server:/var/www/
     </div>
     <div class="feature-card reveal">
       <div class="feature-header">
-        <span class="feature-icon">&#x1f517;</span>
+        <span class="feature-icon">🔗</span>
         <h3>MCP Integration</h3>
       </div>
       <p>Connect any MCP server as a tool provider. GitHub, databases, APIs — all through Omega protocol.</p>
@@ -924,7 +931,7 @@ rsync -avz ./dist/ server:/var/www/
     </div>
     <div class="feature-card reveal">
       <div class="feature-header">
-        <span class="feature-icon">&#x1f6e1;</span>
+        <span class="feature-icon">🛡</span>
         <h3>Safety &amp; Dedup</h3>
       </div>
       <p>Three-layer deduplication prevents double execution. Server-side validation catches corruption.</p>
@@ -932,7 +939,7 @@ rsync -avz ./dist/ server:/var/www/
     </div>
     <div class="feature-card reveal">
       <div class="feature-header">
-        <span class="feature-icon">&#x1f504;</span>
+        <span class="feature-icon">🔄</span>
         <h3>Multi-Site Support</h3>
       </div>
       <p>Works on any AI chat interface. SSE or WebSocket — swap the hook layer, keep everything else.</p>
@@ -948,36 +955,17 @@ rsync -avz ./dist/ server:/var/www/
   <p class="section-desc reveal">
     Standard MCP is powerful. Synapse takes it further.
   </p>
-  <div class="comparison">
-    <div class="compare-card reveal">
-      <h3>Standard MCP</h3>
-      <p class="subtitle">JSON-RPC Protocol</p>
-      <ul class="compare-list">
-        <li><span class="check">&#x2713;</span> Structured tool calls</li>
-        <li><span class="check">&#x2713;</span> Wide ecosystem</li>
-        <li><span class="cross">&#x2717;</span> JSON escaping required</li>
-        <li><span class="cross">&#x2717;</span> Single tool per call</li>
-        <li><span class="cross">&#x2717;</span> No batch execution</li>
-        <li><span class="cross">&#x2717;</span> No heredoc format</li>
-        <li><span class="cross">&#x2717;</span> No browser automation</li>
-        <li><span class="cross">&#x2717;</span> No DOM fallback</li>
-      </ul>
-    </div>
-    <div class="compare-card highlight reveal">
-      <h3>Synapse <span style="color: var(--primary)">Ω</span></h3>
-      <p class="subtitle">Omega Protocol</p>
-      <ul class="compare-list">
-        <li><span class="check">&#x2713;</span> Structured tool calls</li>
-        <li><span class="check">&#x2713;</span> MCP server integration</li>
-        <li><span class="check">&#x2713;</span> Zero escaping (ΩHERE)</li>
-        <li><span class="check">&#x2713;</span> Batch execution (ΩBATCH)</li>
-        <li><span class="check">&#x2713;</span> HEREDOC batch (ΩHEREBATCH)</li>
-        <li><span class="check">&#x2713;</span> Custom end markers</li>
-        <li><span class="check">&#x2713;</span> Full browser control</li>
-        <li><span class="check">&#x2713;</span> Dual-channel reliability</li>
-      </ul>
-    </div>
-  </div>
+  <div class="reveal" style="overflow:hidden;border-radius:16px;border:1px solid rgba(0,229,255,0.15);box-shadow:0 0 40px rgba(0,229,255,0.08);"><table style="width:100%;border-collapse:collapse;font-size:17px;"><thead><tr style="background:rgba(0,229,255,0.1);"><th style="padding:22px 32px;text-align:left;font-size:19px;font-weight:700;color:var(--text);border-bottom:2px solid rgba(0,229,255,0.2);width:45%;">Feature</th><th style="padding:22px 32px;text-align:center;font-size:19px;font-weight:700;color:var(--text-dim);border-bottom:2px solid rgba(0,229,255,0.2);width:27.5%;">Standard MCP</th><th style="padding:22px 32px;text-align:center;font-size:19px;font-weight:700;color:var(--primary);border-bottom:2px solid rgba(0,229,255,0.2);width:27.5%;">Synapse Ω</th></tr></thead><tbody><tr style="background:rgba(0,229,255,0.03);"><td style="padding:18px 32px;color:var(--text);font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);">Structured tool calls</td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td></tr>
+<tr style="background:transparent;"><td style="padding:18px 32px;color:var(--text);font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);">Ecosystem / MCP integration</td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td></tr>
+<tr style="background:rgba(0,229,255,0.03);"><td style="padding:18px 32px;color:var(--text);font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);">Zero-escape content transmission</td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#555;font-size:22px;">&#10007;</span></td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td></tr>
+<tr style="background:transparent;"><td style="padding:18px 32px;color:var(--text);font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);">Batch parallel execution</td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#555;font-size:22px;">&#10007;</span></td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td></tr>
+<tr style="background:rgba(0,229,255,0.03);"><td style="padding:18px 32px;color:var(--text);font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);">HEREDOC multi-tool batch</td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#555;font-size:22px;">&#10007;</span></td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td></tr>
+<tr style="background:transparent;"><td style="padding:18px 32px;color:var(--text);font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);">Custom end markers</td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#555;font-size:22px;">&#10007;</span></td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td></tr>
+<tr style="background:rgba(0,229,255,0.03);"><td style="padding:18px 32px;color:var(--text);font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);">Browser automation</td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#555;font-size:22px;">&#10007;</span></td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td></tr>
+<tr style="background:transparent;"><td style="padding:18px 32px;color:var(--text);font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);">Dual-channel reliability</td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#555;font-size:22px;">&#10007;</span></td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td></tr>
+<tr style="background:rgba(0,229,255,0.03);"><td style="padding:18px 32px;color:var(--text);font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);">Background process management</td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#555;font-size:22px;">&#10007;</span></td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td></tr>
+<tr style="background:transparent;"><td style="padding:18px 32px;color:var(--text);font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);">Cross-tab communication</td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#555;font-size:22px;">&#10007;</span></td><td style="padding:18px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:#00e5ff;font-size:22px;">&#10003;</span></td></tr>
+</tbody></table></div>
 </section>
 
 <!-- CTA -->
@@ -1069,6 +1057,34 @@ function drawNetwork() {
   requestAnimationFrame(drawNetwork);
 }
 drawNetwork();
+
+// Auto-reveal all elements after 1s (fallback for headless/no-scroll)
+setTimeout(function() {
+  document.querySelectorAll('.reveal').forEach(function(el) {
+    el.classList.add('visible');
+  });
+}, 1000);
+
+// Counter animation
+function animateCounters() {
+  var counters = document.querySelectorAll('.stat-value');
+  counters.forEach(function(counter) {
+    var target = parseInt(counter.getAttribute('data-target') || '0');
+    if (target === 0) return;
+    var duration = 2000;
+    var start = performance.now();
+    function update(now) {
+      var elapsed = now - start;
+      var progress = Math.min(elapsed / duration, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      counter.textContent = Math.floor(target * eased);
+      if (progress < 1) requestAnimationFrame(update);
+      else counter.textContent = target;
+    }
+    requestAnimationFrame(update);
+  });
+}
+setTimeout(animateCounters, 1500);
 
 document.addEventListener('mousemove', function(e) { mouse.x = e.clientX; mouse.y = e.clientY; });
 document.addEventListener('mouseleave', function() { mouse.x = -1000; mouse.y = -1000; });
